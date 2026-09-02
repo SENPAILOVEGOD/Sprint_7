@@ -39,4 +39,11 @@ public class CourierClient {
                 .delete(BASE_URI + COURIER_PATH + "/" + courierId);
     }
 
+    public Response deleteCourierWithoutId() {
+        return given()
+                .filter(new AllureRestAssured())
+                .when()
+                .delete(BASE_URI + COURIER_PATH);
+    }
+
 }

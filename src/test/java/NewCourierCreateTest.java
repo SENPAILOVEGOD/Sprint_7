@@ -64,7 +64,7 @@ public class NewCourierCreateTest {
 
     // Тесты
     @Test
-    @DisplayName("Можно создать курьера")
+    @DisplayName("POST /api/v1/courier Можно создать курьера с валидными параметрами")
     @Description("Курьер с уникальным логином создается, ожидаем код 201 и ok:true")
     public void createCourierSuccess() {
         String uniqueLogin = "login_" + System.currentTimeMillis();
@@ -79,7 +79,7 @@ public class NewCourierCreateTest {
     }
 
     @Test
-    @DisplayName("Нельзя создать курьера с повторяющимся логином")
+    @DisplayName("POST /api/v1/courier Нельзя создать курьера с повторяющимся логином")
     @Description("Ожидаем ошибку 409 при попытке создать курьера с уже существующим логином")
     public void cannotCreateDuplicateCourier() {
         String login = "duplicateLogin_" + System.currentTimeMillis();
@@ -97,7 +97,7 @@ public class NewCourierCreateTest {
     }
 
     @Test
-    @DisplayName("Нельзя создать курьера без логина")
+    @DisplayName("POST /api/v1/courier Нельзя создать курьера без логина")
     @Description("Ожидаем ошибку 400 при отсутствии поля login")
     public void cannotCreateCourierWithoutLogin() {
         Courier courier = new Courier(null, "password123", "Иван");
@@ -107,7 +107,7 @@ public class NewCourierCreateTest {
     }
 
     @Test
-    @DisplayName("Нельзя создать курьера без пароля")
+    @DisplayName("POST /api/v1/courier Нельзя создать курьера без пароля")
     @Description("Ожидаем ошибку 400 при отсутствии поля password")
     public void cannotCreateCourierWithoutPassword() {
         Courier courier = new Courier("login_" + System.currentTimeMillis(), null, "Иван");
