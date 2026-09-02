@@ -5,6 +5,8 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import models.Order;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 
 public class OrderClient {
@@ -19,5 +21,17 @@ public class OrderClient {
                 .body(order)
                 .when()
                 .post(BASE_URI + ORDER_PATH);
+    }
+
+    public Response getOrders(Map<String, Object> queryParams) {
+        return given()
+                .filter(new AllureRestAssured())
+                .queryParams(queryParams)
+                .when()
+                .get(BASE_URI + ORDER_PATH);
+    }
+
+    public Response getOrders() {
+        return getOrders(null);
     }
 }
