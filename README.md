@@ -47,7 +47,7 @@ README.md
 1. Клонируйте репозиторий: 
 
 ```bash
-git@github.com:SENPAILOVEGOD/Sprint_7.git
+git clone https://github.com/SENPAILOVEGOD/Sprint_7.git
 cd Sprint_7
 ```
 
@@ -59,12 +59,12 @@ mvn clean test
 3. Сгенерируйте Allure-отчет:
 
 ```bash
-mvn allure:report
+mvn allure:serve
 ```
 
 > Примечание: для генерации отчета в Java 11 используется Allure Commandline. Нужную версию необходимо предварительно скачать [здесь](https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/)
 
-После выполнения `mvn allure:report` в браузере откроется файл с детальным отчетом по тестам.
+После выполнения `mvn allure:serve` в браузере откроется файл с детальным отчетом по тестам.
 
 ## ✍️ Авторы
 
