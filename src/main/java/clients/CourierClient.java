@@ -10,7 +10,7 @@ import static io.restassured.RestAssured.given;
 
 public class CourierClient {
 
-    private static final String BASE_URI = "https://qa-scooter.praktikum-services.ru"; // замените на ваш URL
+    private static final String BASE_URI = "https://qa-scooter.praktikum-services.ru";
     private static final String COURIER_PATH = "/api/v1/courier";
 
     public Response createCourier(Courier courier) {
