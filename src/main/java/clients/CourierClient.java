@@ -32,6 +32,34 @@ public class CourierClient {
                 .post(BASE_URI + COURIER_PATH + "/login");
     }
 
+    public Response loginCourierWithoutBody() {
+        return given()
+                .filter(new AllureRestAssured())
+                .contentType(ContentType.JSON)
+                .when()
+                .post(BASE_URI + COURIER_PATH + "/login");
+    }
+
+    public Response loginCourierWithOnlyLogin(String login) {
+        String body = String.format("{\"login\": \"%s\"}", login);
+        return given()
+                .filter(new AllureRestAssured())
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when()
+                .post(BASE_URI + COURIER_PATH + "/login");
+    }
+
+    public Response loginCourierWithOnlyPassword(String password) {
+        String body = String.format("{\"password\": \"%s\"}", password);
+        return given()
+                .filter(new AllureRestAssured())
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when()
+                .post(BASE_URI + COURIER_PATH + "/login");
+    }
+
     public Response deleteCourier(int courierId) {
         return given()
                 .filter(new AllureRestAssured())

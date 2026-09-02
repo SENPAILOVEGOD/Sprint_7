@@ -1,4 +1,6 @@
 import clients.CourierClient;
+import helpers.CourierCreationResult;
+import helpers.CourierTestHelper;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
@@ -13,53 +15,33 @@ import static org.hamcrest.Matchers.*;
 public class NewCourierCreateTest {
 
     private CourierClient courierClient;
-
-    // Здесь храним ID курьера, полученный методом getCourierId (нужно для удаления после тестов)
-    private int createdCourierId = 0;
+    private CourierTestHelper courierHelper;
 
     @Before
     public void setUp() {
         courierClient = new CourierClient();
+        courierHelper = new CourierTestHelper(courierClient);
     }
 
     @After
     public void tearDown() {
-        if (createdCourierId > 0) {
-            courierClient.deleteCourier(createdCourierId);
-        }
+        courierHelper.cleanUp();
     }
 
     // Шаги
-    @Step("Запрос на создание курьера")
+    @Step("Запрос на создание курьера") // Нужен для негативных проверок без логина или пароля
     public Response sendCreateCourierRequest(Courier courier) {
         return courierClient.createCourier(courier);
     }
 
-    @Step("Проверяем статус ответа: ожидаем 201 Created")
-    public void verifyCreateCourierStatus(Response response) {
-        response.then().statusCode(201);
-    }
-
-    @Step("Проверяем, что ответ содержит ok: true")
-    public void verifyCreateCourierBodyOk(Response response) {
-        response.then().body("ok", is(true));
-    }
-
-    @Step("Проверяем статус ошибки: ожидаем expectedStatus")
+    @Step("Проверяем статус ошибки")
     public void verifyErrorStatus(Response response, int expectedStatus) {
         response.then().statusCode(expectedStatus);
     }
 
-    @Step("Проверяем сообщение ошибки: ожидаем expectedMessage")
+    @Step("Проверяем сообщение ошибки")
     public void verifyErrorMessage(Response response, String expectedMessage) {
         response.then().body("message", equalTo(expectedMessage));
-    }
-
-    @Step("Получаем ID курьера по логину и паролю (нужно для удаления курьера после тестов)")
-    public int getCourierId(Courier courier) {
-        Response loginResponse = courierClient.loginCourier(courier);
-        loginResponse.then().statusCode(200);
-        return loginResponse.path("id");
     }
 
     // Тесты
@@ -67,31 +49,19 @@ public class NewCourierCreateTest {
     @DisplayName("POST /api/v1/courier Можно создать курьера с валидными параметрами")
     @Description("Курьер с уникальным логином создается, ожидаем код 201 и ok:true")
     public void createCourierSuccess() {
-        String uniqueLogin = "login_" + System.currentTimeMillis();
-        Courier courier = new Courier(uniqueLogin, "password123", "Иван");
-
-        Response response = sendCreateCourierRequest(courier);
-        verifyCreateCourierStatus(response);
-        verifyCreateCourierBodyOk(response);
-
-        int courierId = getCourierId(courier);
-        createdCourierId = courierId;
+        CourierCreationResult result = courierHelper.createCourier("password123", "Иван");
+        result.getResponse().then().body("ok", is(true));
     }
 
     @Test
     @DisplayName("POST /api/v1/courier Нельзя создать курьера с повторяющимся логином")
     @Description("Ожидаем ошибку 409 при попытке создать курьера с уже существующим логином")
     public void cannotCreateDuplicateCourier() {
-        String login = "duplicateLogin_" + System.currentTimeMillis();
-        Courier courier = new Courier(login, "password123", "Петр");
+        CourierCreationResult firstResult = courierHelper.createCourier("password123", "Петр");
+        Courier firstCourier = firstResult.getCourier();
 
-        Response firstResponse = sendCreateCourierRequest(courier);
-        verifyCreateCourierStatus(firstResponse);
-        verifyCreateCourierBodyOk(firstResponse);
-        createdCourierId = getCourierId(courier);
-
-        Courier duplicateCourier = new Courier(login, "differentPass", "Сергей");
-        Response duplicateResponse = sendCreateCourierRequest(duplicateCourier);
+        Courier duplicateCourier = new Courier(firstCourier.getLogin(), "differentPass", "Сергей");
+        Response duplicateResponse = courierClient.createCourier(duplicateCourier);
         verifyErrorStatus(duplicateResponse, 409);
         verifyErrorMessage(duplicateResponse, "Этот логин уже используется");
     }

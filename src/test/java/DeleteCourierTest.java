@@ -1,4 +1,6 @@
 import clients.CourierClient;
+import helpers.CourierCreationResult;
+import helpers.CourierTestHelper;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
@@ -14,29 +16,20 @@ import static org.hamcrest.Matchers.is;
 public class DeleteCourierTest {
 
     private CourierClient courierClient;
-    private int createdCourierId = 0;
+    private CourierTestHelper courierHelper;
 
     @Before
     public void setUp() {
         courierClient = new CourierClient();
+        courierHelper = new CourierTestHelper(courierClient);
     }
 
-    // Если после теста остался созданный курьер, удаляем его
     @After
     public void tearDown() {
-        if (createdCourierId > 0) {
-            courierClient.deleteCourier(createdCourierId);
-        }
+        courierHelper.cleanUp();
     }
 
     // Шаги
-    @Step("Логинимся, получаем ID")
-    public int getCourierId(Courier courier) {
-        Response loginResponse = courierClient.loginCourier(courier);
-        loginResponse.then().statusCode(200);
-        return loginResponse.path("id");
-    }
-
     @Step("Проверяем, что курьер удален: статус 200, ok: true")
     public void verifyDeleteSuccess(Response response) {
         response.then()
@@ -44,7 +37,7 @@ public class DeleteCourierTest {
                 .and().body("ok", is(true));
     }
 
-    @Step("Проверяем ошибку при удалении: статус expectedStatus, сообщение expectedMessage")
+    @Step("Проверяем статус и сообщение неуспешного удаления")
     public void verifyDeleteError(Response response, int expectedStatus, String expectedMessage) {
         response.then()
                 .statusCode(expectedStatus)
@@ -56,18 +49,14 @@ public class DeleteCourierTest {
     @Description("Создаём курьера, удаляем его, проверяем статус 200 и ok:true")
     public void deleteCourierSuccess() {
 
-        String login = "deleteTest_" + System.currentTimeMillis();
-        Courier courier = new Courier(login, "password123", "Анна");
-        Response createResponse = courierClient.createCourier(courier);
-        createResponse.then().statusCode(201);
+        CourierCreationResult result = courierHelper.createCourier("password123", "Иван");
+        int courierId = result.getId();
 
-        int courierId = getCourierId(courier);
-        createdCourierId = courierId;
+        // Сбрасываем ID в хелпере, чтобы tearDown не пытался удалить курьера повторно
+        courierHelper.resetCreatedCourierId();
 
         Response deleteResponse = courierClient.deleteCourier(courierId);
         verifyDeleteSuccess(deleteResponse);
-
-        createdCourierId = 0;
     }
 
     @Test
