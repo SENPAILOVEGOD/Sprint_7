@@ -4,17 +4,18 @@
 
 ## 🛠 Стек технологий
 
-* Java 11 (Corretto)
+* **Java 11 (Corretto)**
 
-* Maven — управление зависимостями и сборка
+* **Maven** — управление зависимостями и сборка
 
-* JUnit 4 — фреймворк для тестирования
+* **JUnit 4** — фреймворк для тестирования
 
-* REST Assured — библиотека для выполнения HTTP-запросов
+* **REST Assured** — библиотека для выполнения HTTP-запросов
 
-* Allure — фреймворк для генерации наглядных отчётов о выполнении тестов
+* **Allure** — фреймворк для генерации наглядных отчётов о выполнении тестов
 
-* AspectJ — для работы Allure с аннотациями и перехватом вызовов
+* **AspectJ** — для работы Allure с аннотациями и перехватом вызовов
+* **Lombok** — автоматическая генерация геттеров, сеттеров, конструкторов (для работы в IDE требуется установка плагина)
 
 ## 📁 Структура проекта
 
@@ -26,16 +27,17 @@ src/
 └── test/
     └── java/
         ├── clients/          # Клиенты для отправки запросов к API
+        │   ├── BaseClient.java
         │   ├── CourierClient.java
         │   └── OrderClient.java
         ├── helpers/          # Утилиты для создания и очистки тестовых данных
         │   ├── CourierTestHelper.java
         │   └── CourierCreationResult.java
         └── tests/            # Тестовые классы
-           ├── NewCourierTest.java
+           ├── NewCourierCreateTest.java
            ├── DeleteCourierTest.java
            ├── LoginCourierTest.java
-           ├── OrderTest.java
+           ├── CreateOrderTest.java
            └── OrdersListTest.java
 pom.xml
 README.md
@@ -68,7 +70,7 @@ mvn allure:serve
 
 ## ✍️ Авторы
 
-* Ева Коновалова – студент курса по автоматизации тестирования на Java.
+* **Ева Коновалова** – студент курса по автоматизации тестирования на Java.
 
 ## 📄 Лицензия
-Проект создан в учебных целях
+Проект создан в **учебных целях**
