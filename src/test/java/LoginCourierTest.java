@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.apache.http.HttpStatus.*;
 
 public class LoginCourierTest {
 
@@ -37,7 +38,7 @@ public class LoginCourierTest {
     @Step("Проверяем успешный логин: статус 200, id не null")
     public void verifyLoginSuccess(Response response) {
         response.then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .and().body("id", notNullValue());
     }
 
@@ -61,7 +62,7 @@ public class LoginCourierTest {
     @Description("Ожидаем ошибку 400 с сообщением - Недостаточно данных для входа")
     public void loginWithoutLogin() {
         Response response = courierClient.loginCourierWithOnlyPassword("somePassword");
-        verifyLoginError(response, 400, "Недостаточно данных для входа");
+        verifyLoginError(response, SC_BAD_REQUEST, "Недостаточно данных для входа");
     }
 
     @Test
@@ -69,7 +70,7 @@ public class LoginCourierTest {
     @Description("Ожидаем ошибку 400 с сообщением - Недостаточно данных для входа")
     public void loginWithoutPassword() {
         Response response = courierClient.loginCourierWithOnlyLogin("someLogin");
-        verifyLoginError(response, 400, "Недостаточно данных для входа");
+        verifyLoginError(response, SC_BAD_REQUEST, "Недостаточно данных для входа");
     }
 
     @Test
@@ -77,7 +78,7 @@ public class LoginCourierTest {
     @Description("Ожидаем ошибку 400 с сообщением - Недостаточно данных для входа")
     public void loginWithoutBody() {
         Response response = courierClient.loginCourierWithoutBody();
-        verifyLoginError(response, 400, "Недостаточно данных для входа");
+        verifyLoginError(response, SC_BAD_REQUEST, "Недостаточно данных для входа");
     }
 
     @Test
@@ -86,7 +87,7 @@ public class LoginCourierTest {
     public void loginWithWrongPassword() {
         Courier courierWithWrongPassword = new Courier(newCourier.getLogin(), "wrongPassword", newCourier.getFirstName());
         Response loginResponse = courierClient.loginCourier(courierWithWrongPassword);
-        verifyLoginError(loginResponse, 404, "Учетная запись не найдена");
+        verifyLoginError(loginResponse, SC_NOT_FOUND, "Учетная запись не найдена");
     }
 
     @Test
@@ -95,7 +96,7 @@ public class LoginCourierTest {
     public void loginWithNonExistentLogin() {
         Courier courier = new Courier("nonexistent_login_" + System.currentTimeMillis(), "anyPassword", null);
         Response loginResponse = courierClient.loginCourier(courier);
-        verifyLoginError(loginResponse, 404, "Учетная запись не найдена");
+        verifyLoginError(loginResponse, SC_NOT_FOUND, "Учетная запись не найдена");
     }
 
 }

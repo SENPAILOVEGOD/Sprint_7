@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.apache.http.HttpStatus.*;
 
 public class OrdersListTest {
 
@@ -46,14 +47,14 @@ public class OrdersListTest {
     @Step("Проверяем, что ответ содержит список заказов")
     public void verifyOrdersList(Response response) {
         response.then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .and().body("orders", notNullValue());
     }
 
     @Step("Проверяем ошибку 404 с сообщением о несуществующем курьере")
     public void verifyNotFoundError(Response response, int courierId) {
         response.then()
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .and().body("message", equalTo("Курьер с идентификатором " + courierId + " не найден"));
     }
 

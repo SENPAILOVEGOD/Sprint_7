@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.Matchers.notNullValue;
+import static org.apache.http.HttpStatus.*;
 
 @RunWith(Parameterized.class)
 public class CreateOrderTest {
@@ -41,7 +42,7 @@ public class CreateOrderTest {
 
     @Step("Проверяем статус ответа: ожидается 201 Created")
     public void verifyOrderStatus(Response response) {
-        response.then().statusCode(201);
+        response.then().statusCode(SC_CREATED);
     }
 
     @Step("Проверяем наличие поля track в ответе")

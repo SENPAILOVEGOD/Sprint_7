@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.apache.http.HttpStatus.*;
 
 public class DeleteCourierTest {
 
@@ -65,7 +66,7 @@ public class DeleteCourierTest {
     public void deleteCourierWithNonExistentId() {
         int nonExistentId = 999999; // заведомо несуществующий ID
         Response response = courierClient.deleteCourier(nonExistentId);
-        verifyDeleteError(response, 404, "Курьера с таким id нет");
+        verifyDeleteError(response, SC_NOT_FOUND, "Курьера с таким id нет");
     }
 
     @Test
@@ -73,6 +74,6 @@ public class DeleteCourierTest {
     @Description("Ожидаем ошибку 400 и сообщение - Недостаточно данных для удаления курьера")
     public void deleteCourierWithoutId() {
         Response response = courierClient.deleteCourierWithoutId();
-        verifyDeleteError(response, 400, "Недостаточно данных для удаления курьера");
+        verifyDeleteError(response, SC_BAD_REQUEST, "Недостаточно данных для удаления курьера");
     }
 }

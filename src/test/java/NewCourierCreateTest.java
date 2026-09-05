@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
+import static org.apache.http.HttpStatus.*;
 
 public class NewCourierCreateTest {
 
@@ -62,7 +63,7 @@ public class NewCourierCreateTest {
 
         Courier duplicateCourier = new Courier(firstCourier.getLogin(), "differentPass", "Сергей");
         Response duplicateResponse = courierClient.createCourier(duplicateCourier);
-        verifyErrorStatus(duplicateResponse, 409);
+        verifyErrorStatus(duplicateResponse, SC_CONFLICT);
         verifyErrorMessage(duplicateResponse, "Этот логин уже используется");
     }
 
@@ -72,7 +73,7 @@ public class NewCourierCreateTest {
     public void cannotCreateCourierWithoutLogin() {
         Courier courier = new Courier(null, "password123", "Иван");
         Response response = sendCreateCourierRequest(courier);
-        verifyErrorStatus(response, 400);
+        verifyErrorStatus(response, SC_BAD_REQUEST);
         verifyErrorMessage(response, "Недостаточно данных для создания учетной записи");
     }
 
@@ -82,7 +83,7 @@ public class NewCourierCreateTest {
     public void cannotCreateCourierWithoutPassword() {
         Courier courier = new Courier("login_" + System.currentTimeMillis(), null, "Иван");
         Response response = sendCreateCourierRequest(courier);
-        verifyErrorStatus(response, 400);
+        verifyErrorStatus(response, SC_BAD_REQUEST);
         verifyErrorMessage(response, "Недостаточно данных для создания учетной записи");
     }
 }

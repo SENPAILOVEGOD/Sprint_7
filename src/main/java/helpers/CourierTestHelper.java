@@ -5,6 +5,8 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import models.Courier;
 
+import static org.apache.http.HttpStatus.*;
+
 public class CourierTestHelper {
 
     private final CourierClient courierClient;
@@ -19,7 +21,7 @@ public class CourierTestHelper {
         String login = "login_" + System.currentTimeMillis();
         Courier courier = new Courier(login, password, firstName);
         Response createResponse = courierClient.createCourier(courier);
-        createResponse.then().statusCode(201);
+        createResponse.then().statusCode(SC_CREATED);
         int id = getCourierId(courier);
         this.createdCourierId = id;
         return new CourierCreationResult(courier, createResponse, id);
@@ -28,7 +30,7 @@ public class CourierTestHelper {
     @Step("Получаем ID курьера по логину и паролю")
     public int getCourierId(Courier courier) {
         Response loginResponse = courierClient.loginCourier(courier);
-        loginResponse.then().statusCode(200);
+        loginResponse.then().statusCode(SC_OK);
         return loginResponse.path("id");
     }
 
