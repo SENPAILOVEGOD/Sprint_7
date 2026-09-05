@@ -17,11 +17,15 @@ public class LoginCourierTest {
 
     private CourierClient courierClient;
     private CourierTestHelper courierHelper;
+    private Courier newCourier;
 
     @Before
     public void setUp() {
         courierClient = new CourierClient();
         courierHelper = new CourierTestHelper(courierClient);
+
+        CourierCreationResult result = courierHelper.createCourier("password123", "Иван");
+        newCourier = result.getCourier();
     }
 
     @After
@@ -46,12 +50,9 @@ public class LoginCourierTest {
 
     @Test
     @DisplayName("POST /api/v1/courier/login Успешный логин курьера")
-    @Description("Курьер создаётся, затем логинится, ожидаем статус 200 и id не null")
+    @Description("Существующий курьер с валидными данными, ожидаем статус 200 и id не null")
     public void loginCourierSuccess() {
-        CourierCreationResult result = courierHelper.createCourier("password123", "Иван");
-        Courier courier = result.getCourier();
-
-        Response loginResponse = courierClient.loginCourier(courier);
+        Response loginResponse = courierClient.loginCourier(newCourier);
         verifyLoginSuccess(loginResponse);
     }
 
@@ -83,11 +84,8 @@ public class LoginCourierTest {
     @DisplayName("POST /api/v1/courier/login Ошибка в ответе на запрос с неверным паролем")
     @Description("Ожидаем ошибку 404 с сообщением - Учетная запись не найдена")
     public void loginWithWrongPassword() {
-        CourierCreationResult result = courierHelper.createCourier("password123", "Иван");
-        Courier courier = result.getCourier();
-
-        courier.setPassword("wrongPassword");
-        Response loginResponse = courierClient.loginCourier(courier);
+        Courier courierWithWrongPassword = new Courier(newCourier.getLogin(), "wrongPassword", newCourier.getFirstName());
+        Response loginResponse = courierClient.loginCourier(courierWithWrongPassword);
         verifyLoginError(loginResponse, 404, "Учетная запись не найдена");
     }
 

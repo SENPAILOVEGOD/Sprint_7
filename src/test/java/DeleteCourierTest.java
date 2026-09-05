@@ -5,7 +5,6 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
-import models.Courier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,11 +16,15 @@ public class DeleteCourierTest {
 
     private CourierClient courierClient;
     private CourierTestHelper courierHelper;
+    private int courierId;
 
     @Before
     public void setUp() {
         courierClient = new CourierClient();
         courierHelper = new CourierTestHelper(courierClient);
+
+        CourierCreationResult result = courierHelper.createCourier("password123", "Иван");
+        courierId = result.getId();
     }
 
     @After
@@ -49,14 +52,11 @@ public class DeleteCourierTest {
     @Description("Создаём курьера, удаляем его, проверяем статус 200 и ok:true")
     public void deleteCourierSuccess() {
 
-        CourierCreationResult result = courierHelper.createCourier("password123", "Иван");
-        int courierId = result.getId();
+        Response deleteResponse = courierClient.deleteCourier(courierId);
+        verifyDeleteSuccess(deleteResponse);
 
         // Сбрасываем ID в хелпере, чтобы tearDown не пытался удалить курьера повторно
         courierHelper.resetCreatedCourierId();
-
-        Response deleteResponse = courierClient.deleteCourier(courierId);
-        verifyDeleteSuccess(deleteResponse);
     }
 
     @Test
