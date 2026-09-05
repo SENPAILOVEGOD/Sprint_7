@@ -1,77 +1,61 @@
 package clients;
 
-import io.qameta.allure.restassured.AllureRestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import models.Courier;
 import models.LoginCourier;
 
-import static io.restassured.RestAssured.given;
+public class CourierClient extends BaseClient {
 
-public class CourierClient {
-
-    private static final String BASE_URI = "https://qa-scooter.praktikum-services.ru";
     private static final String COURIER_PATH = "/api/v1/courier";
+    private static final String COURIER_LOGIN_PATH = COURIER_PATH + "/login";
 
     public Response createCourier(Courier courier) {
-        return given()
-                .filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
+        return getBaseSpec()
                 .body(courier)
                 .when()
-                .post(BASE_URI + COURIER_PATH);
+                .post(COURIER_PATH);
     }
 
     public Response loginCourier(Courier courier) {
         LoginCourier loginCourier = new LoginCourier(courier.getLogin(), courier.getPassword());
-        return given()
-                .filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
+        return getBaseSpec()
                 .body(loginCourier)
                 .when()
-                .post(BASE_URI + COURIER_PATH + "/login");
+                .post(COURIER_LOGIN_PATH);
     }
 
     public Response loginCourierWithoutBody() {
-        return given()
-                .filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
+        return getBaseSpec()
                 .when()
-                .post(BASE_URI + COURIER_PATH + "/login");
+                .post(COURIER_LOGIN_PATH);
     }
 
     public Response loginCourierWithOnlyLogin(String login) {
-        String body = String.format("{\"login\": \"%s\"}", login);
-        return given()
-                .filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
-                .body(body)
+        LoginCourier loginCourier = new LoginCourier(login, null);
+        return getBaseSpec()
+                .body(loginCourier)
                 .when()
-                .post(BASE_URI + COURIER_PATH + "/login");
+                .post(COURIER_LOGIN_PATH);
     }
 
     public Response loginCourierWithOnlyPassword(String password) {
-        String body = String.format("{\"password\": \"%s\"}", password);
-        return given()
-                .filter(new AllureRestAssured())
-                .contentType(ContentType.JSON)
-                .body(body)
+        LoginCourier loginCourier = new LoginCourier(null, password);
+        return getBaseSpec()
+                .body(loginCourier)
                 .when()
-                .post(BASE_URI + COURIER_PATH + "/login");
+                .post(COURIER_LOGIN_PATH);
     }
 
     public Response deleteCourier(int courierId) {
-        return given()
-                .filter(new AllureRestAssured())
+        return getBaseSpec()
                 .when()
-                .delete(BASE_URI + COURIER_PATH + "/" + courierId);
+                .delete(COURIER_PATH + "/" + courierId);
     }
 
     public Response deleteCourierWithoutId() {
-        return given()
-                .filter(new AllureRestAssured())
+        return getBaseSpec()
                 .when()
-                .delete(BASE_URI + COURIER_PATH);
+                .delete(COURIER_PATH);
     }
 
 }
